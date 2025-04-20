@@ -4,19 +4,18 @@ session_start();
 // Koneksi ke database
 include('../db_connect.php');  // Pastikan path-nya sesuai dengan folder struktur Anda
 
-// Query untuk mendapatkan data hewan dan vet yang berhubungan
-$query = "SELECT a.animal_id, a.animal_name, a.animal_born, 
-                 o.owner_givenname, o.owner_familyname, 
-                 vt.vet_givenname, vt.vet_familyname
-          FROM animal a
-          JOIN owners o ON a.owner_id = o.owner_id
-          JOIN vet vt ON a.at_id = vt.clinic_id";  // Assuming at_id is related to clinic_id in the vet table
+// Query to fetch only data from the animal table
+$query = "
+    SELECT a.animal_id, a.animal_name, a.animal_born, a.owner_id, a.at_id
+    FROM animal a
+    ORDER BY a.animal_name DESC
+";
 
 $result = mysqli_query($conn, $query);
 
-// Cek jika query berhasil
+// Check if the query was successful
 if (!$result) {
-    echo "Error fetching animals and vet data: " . mysqli_error($conn);
+    echo "Error fetching animal data: " . mysqli_error($conn);
     exit;
 }
 ?>
@@ -25,8 +24,7 @@ if (!$result) {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hewan dan Dokter - Klinik Sahabat Satwa</title>
+    <title>Hewan - Klinik Sahabat Satwa</title>
     <style>
         /* Basic styles */
         body {
@@ -120,12 +118,25 @@ if (!$result) {
         .btn-back:hover {
             color: #3498DB;
         }
+
+        .btn-edit {
+            background-color: #e67e22;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-edit:hover {
+            background-color: #d35400;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Hewan dan Dokter</h1>
+    <h1>Hewan</h1>
 </header>
 
 <div class="container">
@@ -133,7 +144,7 @@ if (!$result) {
         <button class="btn-back">&#8592; Kembali ke Dashboard Vet</button>
     </a>
 
-    <h2>Daftar Hewan dan Dokter</h2>
+    <h2>Daftar Hewan</h2>
     
     <table>
         <thead>
@@ -141,20 +152,22 @@ if (!$result) {
                 <th>ID Hewan</th>
                 <th>Nama Hewan</th>
                 <th>Tanggal Lahir</th>
-                <th>Nama Pemilik</th>
-                <th>Nama Dokter</th>
+                <th>Owner ID</th>
+                <th>Vet ID</th>
+                <th>Aksi</th> <!-- Menambahkan kolom aksi untuk tombol Edit -->
             </tr>
         </thead>
         <tbody>
             <?php
-            // Menampilkan data dari query hewan dan dokter
+            // Displaying data from the query
             while ($row = mysqli_fetch_assoc($result)) {
                 echo "<tr>
                         <td>{$row['animal_id']}</td>
                         <td>{$row['animal_name']}</td>
                         <td>{$row['animal_born']}</td>
-                        <td>{$row['owner_givenname']} {$row['owner_familyname']}</td>
-                        <td>{$row['vet_givenname']} {$row['vet_familyname']}</td>
+                        <td>{$row['owner_id']}</td>
+                        <td>{$row['at_id']}</td>
+                        <td><a href='edit_animal_vet.php?id={$row['animal_id']}'><button class='btn-edit'>Edit</button></a></td> <!-- Edit Button -->
                     </tr>";
             }
             ?>
