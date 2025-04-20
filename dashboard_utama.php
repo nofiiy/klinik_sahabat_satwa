@@ -151,6 +151,7 @@ $role = $_SESSION['role'];
                 <button class="btn" onclick="window.location.href=\'vet/hewan_vet.php\'">Kelola Hewan</button>
                 <button class="btn" onclick="window.location.href=\'vet/kunjungan_vet.php\'">Kunjungan</button>
                 <button class="btn" onclick="window.location.href=\'vet/kunjungan_obat_vet.php\'">Kunjungan Obat</button>
+                <button class="btn" onclick="window.location.href=\'vet/obat_vet.php\'">Obat</button>
               </div>';
     } elseif ($role == 'owner') {
         // Konten untuk Owner
