@@ -4,12 +4,24 @@ session_start();
 // Koneksi ke database
 include('../db_connect.php');  // Pastikan path-nya sesuai dengan folder struktur Anda
 
-// Query untuk mendapatkan data dari tabel visit
-$query = "SELECT v.visit_id, v.visit_date_time, v.visit_notes, a.animal_name, 
-          CONCAT(vt.vet_givenname, ' ', vt.vet_familyname) AS vet_name
-          FROM visit v
-          JOIN animal a ON v.animal_id = a.animal_id
-          JOIN vet vt ON v.vet_id = vt.vet_id";
+// Cek apakah pengguna sudah login dan memiliki role 'vet'
+if (!isset($_SESSION['role']) || $_SESSION['role'] != 'vet') {
+    $_SESSION['error_message'] = "Oops, kamu salah masuk!"; // Simpan pesan error di session
+    header("Location: login.php"); // Redirect ke login
+    exit;
+}
+
+// Query untuk mendapatkan data dari tabel visit dengan nama hewan dan nama dokter
+$query = "
+    SELECT v.visit_id, v.visit_date_time, v.visit_notes, 
+           a.animal_name AS animal_name, 
+           CONCAT(d.vet_givenname, ' ', d.vet_familyname) AS vet_name
+    FROM visit v
+    LEFT JOIN animal a ON v.animal_id = a.animal_id
+    LEFT JOIN vet d ON v.vet_id = d.vet_id
+    ORDER BY v.visit_date_time DESC
+";
+
 $result = mysqli_query($conn, $query);
 
 // Cek jika query berhasil
@@ -117,6 +129,20 @@ if (!$result) {
         .btn-back:hover {
             color: #3498DB;
         }
+
+        .btn-action {
+            background-color: #3498DB;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .btn-action:hover {
+            background-color: #2980B9;
+        }
     </style>
 </head>
 <body>
@@ -132,6 +158,10 @@ if (!$result) {
 
     <h2>Visit List</h2>
     
+    <a href="add_visit_vet.php">
+        <button class="btn-action">Tambah Kunjungan Baru</button>
+    </a>
+
     <table>
         <thead>
             <tr>
@@ -140,6 +170,7 @@ if (!$result) {
                 <th>Animal Name</th>
                 <th>Vet Name</th>
                 <th>Visit Notes</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -152,6 +183,9 @@ if (!$result) {
                         <td>{$row['animal_name']}</td>
                         <td>{$row['vet_name']}</td>
                         <td>{$row['visit_notes']}</td>
+                        <td>
+                            <a href='edit_kunjungan_vet.php?id={$row['visit_id']}'>Edit</a>
+                        </td>
                     </tr>";
             }
             ?>
