@@ -128,6 +128,7 @@ if (isset($_GET['delete_id'])) {
                 <th>Name</th>
                 <th>Born Date</th>
                 <th>Owner ID</th>
+                <th>Animal Type ID</th> <!-- Tampilkan ID Jenis Hewan -->
                 <th>Actions</th>
             </tr>
         </thead>
@@ -150,6 +151,7 @@ if (isset($_GET['delete_id'])) {
                         <td>{$row['animal_name']}</td>
                         <td>{$row['animal_born']}</td>
                         <td>{$row['owner_id']}</td>
+                        <td>{$row['at_id']}</td> <!-- Menampilkan ID Jenis Hewan -->
                         <td>
                             <!-- Tombol Edit -->
                             <a href='edit_animal.php?id={$row['animal_id']}'><button class='btn'>Edit</button></a>
