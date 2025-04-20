@@ -2,7 +2,7 @@
 session_start();
 
 // Koneksi ke database
-include('../db_connect.php');  // Pastikan path-nya sesuai dengan folder struktur Anda
+include('../db_connect.php');
 
 // Cek jika pengguna bukan admin, arahkan kembali ke login
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
@@ -32,13 +32,17 @@ if (mysqli_num_rows($result) == 0) {
 
 $animal = mysqli_fetch_assoc($result);
 
+// Ambil data jenis hewan (at_id) untuk dropdown
+$types_query = "SELECT * FROM animal_type"; // Pastikan ada tabel `animal_type` yang menyimpan jenis hewan
+$types_result = mysqli_query($conn, $types_query);
+
 // Proses form submission untuk mengupdate data hewan
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Ambil data dari form
     $animal_name = mysqli_real_escape_string($conn, $_POST['animal_name']);
     $animal_born = mysqli_real_escape_string($conn, $_POST['animal_born']);
     $owner_id = mysqli_real_escape_string($conn, $_POST['owner_id']);
-    $at_id = mysqli_real_escape_string($conn, $_POST['at_id']);
+    $at_id = mysqli_real_escape_string($conn, $_POST['at_id']); // Menggunakan nama jenis hewan
 
     // Query untuk mengupdate data hewan
     $update_query = "UPDATE animal 
@@ -90,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             font-size: 30px;
         }
 
-        input {
+        input, select {
             width: 100%;
             padding: 15px;
             margin: 10px 0;
@@ -130,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: #c0392b;
         }
 
-        /* For mobile responsiveness */
         @media (max-width: 768px) {
             .form-container {
                 width: 90%;
@@ -154,7 +157,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="text" name="animal_name" value="<?php echo $animal['animal_name']; ?>" placeholder="Animal Name" required>
             <input type="date" name="animal_born" value="<?php echo $animal['animal_born']; ?>" placeholder="Date of Birth" required>
             <input type="number" name="owner_id" value="<?php echo $animal['owner_id']; ?>" placeholder="Owner ID" required>
-            <input type="number" name="at_id" value="<?php echo $animal['at_id']; ?>" placeholder="Treatment/Clinic ID" required>
+
+            <!-- Dropdown untuk memilih jenis hewan -->
+            <select name="at_id" required>
+                <option selected><?php echo $animal['at_id']; ?></option> <!-- Menampilkan jenis hewan yang sudah ada -->
+                <?php
+                while ($type = mysqli_fetch_assoc($types_result)) {
+                    // Jika tidak ada value, gunakan text sebagai nama jenis hewan
+                    echo "<option>{$type['type_name']}</option>";
+                }
+                ?>
+            </select>
+
             <button type="submit" class="btn">Update Animal</button>
         </form>
     </div>
