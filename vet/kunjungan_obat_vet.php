@@ -103,7 +103,6 @@ if (!$result) {
             color: white;
         }
 
-        /* Tombol Kembali dengan hanya ikon panah */
         .btn-back {
             background-color: transparent;
             border: none;
@@ -116,6 +115,20 @@ if (!$result) {
 
         .btn-back:hover {
             color: #3498DB;
+        }
+
+        .btn-action {
+            background-color: #3498DB;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .btn-action:hover {
+            background-color: #2980B9;
         }
     </style>
 </head>
@@ -131,7 +144,12 @@ if (!$result) {
     </a>
 
     <h2>List of Visit Drugs</h2>
-    
+
+    <!-- Add button to insert new visit drug -->
+    <a href="add_visit_drug.php">
+        <button class="btn-action">Tambah Kunjungan Obat Baru</button>
+    </a>
+
     <table>
         <thead>
             <tr>
